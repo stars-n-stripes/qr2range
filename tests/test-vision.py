@@ -14,6 +14,7 @@ import os
 import unittest
 
 class TestVision(unittest.TestCase):
+
     def test_create_qr(self):
         # Test the python creator
         outpath = Path(__file__).parent / "img/qr-gen-test.png"
@@ -32,6 +33,9 @@ class TestVision(unittest.TestCase):
 
         # image = cv2.imread(test_qr_imgpath)
         image = cv2.imread(multi_qr_imgpath)
+        # Gaussian test: 
+        image = cv2.GaussianBlur(image, (3, 3), 0)
+
         detector = cv2.QRCodeDetector()
 
         retval, decodedTexts, codes, _ = detector.detectAndDecodeMulti(image)
@@ -44,22 +48,25 @@ class TestVision(unittest.TestCase):
                     next_idx = (j+1) % len(qr_point_group)
                     cv2.line(image, tuple(qr_point_group[j].astype(int)), tuple(qr_point_group[next_idx].astype(int)), (255, 0, 0), 5)
                 # print(f"Detected Code: {decodedTexts[i]}")
-        
-        if human_verify:
-            cv2.imshow("Image", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-            self.assertTrue(input("Press ENTER to confirm the image looked good; enter 'N' to reject: ") == "")
-        
+
+        # Just check that we are 4/4 on codes
+        if len(codes) < 4:
+            # qr2range.util.show_cv2img_blocking(image, message=f"Failed Test Case: {len(codes)}/4 detected")
+            cv2.imshow()
         else:
-            # Just check that we are 4/4 on codes
-            self.assertTrue(len(codes) == 4)
+            qr2range.util.show_cv2img_blocking(image, message=f"Successful QR Code detection test")
+        self.assertTrue(len(codes) == 4)
 
     def test_detect_rectangles(self):
         qr_imgpath = (Path(__file__).parent / "img/qr-network-test.png").__str__()
         image = cv2.imread(qr_imgpath)
         qr2range.vision.detect_whiteboard_rectangles(image)
         self.assertTrue(1) # TODO: Fill out with actual test at some point; just checking functionality here
+
+    @classmethod
+    def tearDownClass(cls):
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
         
 if __name__ == "__main__":
