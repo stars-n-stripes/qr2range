@@ -4,6 +4,10 @@ import numpy as np
 
 def detect_whiteboard_rectangles(img, hsv_filter_low=None, hsv_filter_high=None):
 
+    # ======= Pre-Processing ======
+    # Smooth the image
+    gaussian_img = cv2.GaussianBlur(img, (3, 3), 0)
+
     # ======= Red Filter ======= 
     # default params
     if not hsv_filter_low:
@@ -11,7 +15,7 @@ def detect_whiteboard_rectangles(img, hsv_filter_low=None, hsv_filter_high=None)
     if not hsv_filter_high:
         hsv_filter_high = np.array([0, 255, 255])
     
-    hsv_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv_img = cv2.cvtColor(gaussian_img, cv2.COLOR_BGR2HSV)
     # Process the image
     mask = cv2.inRange(hsv_img, hsv_filter_low, hsv_filter_high)
     result = cv2.bitwise_and(img, img, mask=mask)
@@ -40,6 +44,11 @@ def detect_whiteboard_rectangles(img, hsv_filter_low=None, hsv_filter_high=None)
     # Now, we can select corners
     # TODO: This seems like a good list of OpenCV subtasks to get what we need:
     # https://stackoverflow.com/a/7263794
+
+    # 1. Convert from RGB to grayscale
+    grayscale_img = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+
+
     
     
     
