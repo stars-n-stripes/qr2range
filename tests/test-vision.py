@@ -59,7 +59,7 @@ class TestVision(unittest.TestCase):
         self.assertTrue(len(codes) == 4)
 
     def test_detect_rectangles(self):
-        qr_imgpath = (Path(__file__).parent / "img/qr-network-test.png").__str__()
+        qr_imgpath = (Path(__file__).parent / "img/qr-network-test.jpg").__str__()
         image = cv2.imread(qr_imgpath)
         qr2range.vision.detect_networking_shapes(image)
         self.assertTrue(1) # TODO: Fill out with actual test at some point; just checking functionality here

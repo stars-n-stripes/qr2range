@@ -46,16 +46,25 @@ def detect_networking_shapes(img, hsv_filter_low=None, hsv_filter_high=None):
     # https://stackoverflow.com/a/7263794
 
     # 1. Convert from RGB to grayscale
-    grayscale_img = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    grayscale_result = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
 
     # 2. Blur (done above)
 
-    # 3. Detect corners
-    corner = cv2.cornerHarris(grayscale_img, 2, 3, 0.04)
+    # 3. Detect corners (+ edges)
+    corner = cv2.cornerHarris(grayscale_result, 2, 3, 0.04)
+    edges = cv2.Canny(grayscale_result, 50, 150)
+    # Detect contours from Canny
+    contours, hierarchy = cv2.findContours(edges,cv2.RETR_TREE,cv2.CHAIN_APPROX_NONE)
+    contour_img = img.copy()
+    cv2.drawContours(image=contour_img, contours=contours, contourIdx=-1, color=(0, 255, 0), thickness=2, lineType=cv2.LINE_AA)
 
     # Generate a test image showing the corners
-    corner_mask = np.zeros_like(grayscale_img)
+    corner_mask = np.zeros_like(grayscale_result)
     corner_mask[corner>0.01*corner.max()] = 255 # simple thresholding to make the corners white
-    
-    cv2.imshow("Corner Detections", corner_mask)
+
+    # Generate a test image showing the edges    
+    # cv2.imshow("Corner Detections", corner_mask)
+    # cv2.imshow("Edge Detections", edges)
+    cv2.imshow("Contours", contour_img)
+
 
