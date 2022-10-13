@@ -2,7 +2,7 @@ import cv2
 from . import util
 import numpy as np
 
-def detect_whiteboard_rectangles(img, hsv_filter_low=None, hsv_filter_high=None):
+def detect_networking_shapes(img, hsv_filter_low=None, hsv_filter_high=None):
 
     # ======= Pre-Processing ======
     # Smooth the image
@@ -48,9 +48,14 @@ def detect_whiteboard_rectangles(img, hsv_filter_low=None, hsv_filter_high=None)
     # 1. Convert from RGB to grayscale
     grayscale_img = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
 
+    # 2. Blur (done above)
 
+    # 3. Detect corners
+    corner = cv2.cornerHarris(grayscale_img, 2, 3, 0.04)
+
+    # Generate a test image showing the corners
+    corner_mask = np.zeros_like(grayscale_img)
+    corner_mask[corner>0.01*corner.max()] = 255 # simple thresholding to make the corners white
     
-    
-    
-    util.show_cv2img_blocking(result)
+    cv2.imshow("Corner Detections", corner_mask)
 
